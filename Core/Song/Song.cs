@@ -7,15 +7,12 @@ namespace Uso.Core.Song
 {
     interface Song
     {
-        /// <summary>
-        /// The accomp notes
-        /// </summary>
-        List<NoteEvent> Accomp { get; }
+        List<Event> Events { get; }
 
         long PPQ { get; }
 
         /// <summary>
-        /// initial tempo, in microseconds per beat
+        /// initial tempo, in microseconds per quarter note
         /// </summary>
         long InitialTempo { get; }
     }

@@ -16,7 +16,7 @@ namespace Uso.UWP
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private MidiManager midiManager;
+        private Manager midiManager;
 
         public TestGame()
         {
@@ -42,17 +42,26 @@ namespace Uso.UWP
             var m = new MidiFile("Assets/test.mid");
             Task.Run(async () =>
             {
-                var g =await Uso.Core.Game.NewGame(Core.Song.MidiSong.fromMidi(m), midiManager, this);
+                var g =await Uso.Core.Game.NewGame(MidiSong.FromMidi(m), midiManager, this);
                 g.Play();
             });
         }
+
+        private long fsTime=-1;
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            long now = FileSystemTime.Now1;
+            if (fsTime != -1)
+            {
+                // TODO: Add your update logic here
+                foreach (var t in timeSources)
+                    t.Update((now-fsTime) /10.0);
+            }
+            fsTime = now;
 
             base.Update(gameTime);
         }
@@ -60,10 +69,8 @@ namespace Uso.UWP
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // TODO: Add your drawing code here
-            foreach (var t in timeSources)
-                t.Update(gameTime.ElapsedGameTime.TotalMilliseconds * 1000);
+
 
             base.Draw(gameTime);
         }

@@ -9,17 +9,7 @@ namespace Uso.Core.Song
 {
     class MidiSong : Song
     {
-        private class MidiEvent : NoteEvent
-        {
-            public long Tick { get; set; }
 
-            public bool On { get; set; }
-
-            public byte Note { get; set; }
-
-            public byte Velocity { get; set; }
-
-        }
         private MidiSong() { }
 
         public List<NoteEvent> Accomp { get; private set; }
@@ -28,9 +18,11 @@ namespace Uso.Core.Song
 
         public long InitialTempo { get; private set; }
 
-        public static Song fromMidi(MidiFile f)
+        public List<Event> Events { get; private set; }
+
+        public static Song FromMidi(MidiFile f)
         {
-            var notes = new List<NoteEvent>();
+            var events = new List<Event>();
 
             foreach (var t in f.Tracks)
             {
@@ -38,22 +30,32 @@ namespace Uso.Core.Song
                 {
                     switch (e.MidiEventType)
                     {
-                        case MidiEventType.NoteOn:
-                            notes.Add(new MidiEvent
+                        case MidiEventType.MetaEvent:
+                            if (e.MetaEventType == MetaEventType.Tempo)
                             {
-                                Tick = e.Time,
-                                On = true,
+                                events.Add(new TempoChangeEvent
+                                {
+                                    Time = e.Time,
+                                    NewTempo = e.NewTempo,
+                                });
+                            }
+                            break;
+                        case MidiEventType.NoteOn:
+                            events.Add(new NoteOnEvent
+                            {
+                                Time = e.Time,
                                 Note = (byte)e.Note,
-                                Velocity = (byte)e.Velocity
+                                Velocity = (byte)e.Velocity,
+                                Accomp = true,
                             });
                             break;
                         case MidiEventType.NoteOff:
-                            notes.Add(new MidiEvent
+                            events.Add(new NoteOffEvent
                             {
-                                Tick = e.Time,
-                                On = false,
+                                Time = e.Time,
                                 Note = (byte)e.Note,
-                                Velocity = (byte)e.Velocity
+                                Velocity = (byte)e.Velocity,
+                                Accomp = true,
                             });
                             break;
                     }
@@ -62,9 +64,9 @@ namespace Uso.Core.Song
 
             return new MidiSong
             {
-                Accomp = notes,
+                Events = events,
                 PPQ = f.TicksPerQuarterNote,
-                InitialTempo = 60*1000*1000/120,
+                InitialTempo = 60 * 1000 * 1000 / 120,
             };
         }
     }

@@ -66,8 +66,9 @@
             switch (metaEventType)
             {
                 case (byte)MetaEventType.Tempo:
-                    var mspqn = (data[position + 1] << 16) | (data[position + 2] << 8) | data[position + 3];
-                    data1 = (byte)(60000000.0 / mspqn);
+                    //TODO rounds heavily
+                    data1 = data[position + 1];
+                    data2 = data[position + 2];
                     position += 4;
                     return true;
 
@@ -291,6 +292,8 @@
         public ControlChangeType ControlChangeType => (ControlChangeType)this.Arg2;
 
         public int Value => this.Arg3;
+
+        public long NewTempo => (this.Arg2 << 16) + (this.Arg3 << 8);
     }
 
     public struct TextEvent

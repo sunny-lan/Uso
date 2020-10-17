@@ -93,6 +93,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FileSystemTime.cs" />
     <Compile Include="GSSynth.cs" />
     <Compile Include="TestGame.cs" />
     <Compile Include="GamePage.xaml.cs">

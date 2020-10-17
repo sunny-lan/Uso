@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Uso.Core.MIDI;
 using Uso.Core.Timing;
+using System;
 
 namespace Uso.Core
 {
@@ -12,15 +12,31 @@ namespace Uso.Core
         TimeSource timeManager;
 
 
-        public static async Task<Game> NewGame(Song.Song s, MidiManager midiManager,  TimeSourceFactory tf)
+        public static async Task<Game> NewGame(Song.Song s, MIDI.Manager midiManager,  TimeSourceFactory tf)
         {
             TimeSource timeManager = tf.NewTimeSource(s.PPQ, s.InitialTempo);
-            var device = await midiManager.CreateOutput();
-            foreach (MIDIOutputEvent e in s.Accomp)
+            var output = await midiManager.CreateOutput();
+            foreach (Song.Event e in s.Events)
             {
-                timeManager.Schedule(e.Tick, () =>
+                timeManager.Schedule(e.Time, () =>
                 {
-                    device.SendMessage(e);
+                    if (e.Accomp)
+                    {
+                        if(e is Song.NoteEvent)
+                        {
+                            output.SendMessage(Song.MIDIAdapter.Convert(e as Song.NoteEvent));
+                        }
+                        else
+                        {
+                            throw new ArgumentException("Bad accomp event. Must be a NoteEvent");
+                        }
+                    }
+
+                    if(e is Song.TempoChangeEvent)
+                    {
+                        var e2 = e as Song.TempoChangeEvent;
+                        timeManager.Tempo = e2.NewTempo;
+                    }
                 });
             }
             return new Game

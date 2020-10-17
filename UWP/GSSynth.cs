@@ -6,23 +6,23 @@ using Windows.Devices.Midi;
 
 namespace Uso.UWP
 {
-    class GsSynthManager :MidiManager
+    class GsSynthManager :Manager
     {
         public GsSynthManager() { }
-        public async Task<MidiOutput> CreateOutput()
+        public async Task<Output> CreateOutput()
         {
             var r = await MidiSynthesizer.CreateAsync();
             return new GSSynth { intSynth = r };
         }
 
-        private class GSSynth : MidiOutput
+        private class GSSynth : Output
         {
             public MidiSynthesizer intSynth;
 
-            public void SendMessage(MIDIOutputEvent evt)
+            public void SendMessage(NoteEvent evt)
             {
                 IMidiMessage msg;
-                if (evt.On)
+                if (evt is NoteOnEvent)
                 {
                     msg = new MidiNoteOnMessage(0, evt.Note, evt.Velocity);
                 }

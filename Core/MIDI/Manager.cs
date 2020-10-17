@@ -2,8 +2,8 @@
 
 namespace Uso.Core.MIDI
 {
-    interface MidiManager
+    interface Manager
     {
-        Task<MidiOutput> CreateOutput();
+        Task<Output> CreateOutput();
     }
 }
