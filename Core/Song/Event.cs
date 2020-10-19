@@ -20,8 +20,13 @@ namespace Uso.Core.Song
         public int Note { get; set; }
     }
 
-    class NoteOnEvent : NoteEvent { } //TODO add backreference
-    class NoteOffEvent : NoteEvent { }
+    class NoteOnEvent : NoteEvent {
+        public NoteOffEvent Match;
+    } 
+
+    class NoteOffEvent : NoteEvent {
+        public NoteOnEvent Match;
+    }
 
     class TempoChangeEvent:Event
     {

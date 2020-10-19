@@ -24,6 +24,8 @@ namespace Uso.Core.Song
         {
             var events = new List<Event>();
 
+            var lastOn=new Dictionary<int, NoteOnEvent>();
+
             foreach (var t in f.Tracks)
             {
                 foreach (var e in t.MidiEvents)
@@ -41,22 +43,34 @@ namespace Uso.Core.Song
                             }
                             break;
                         case MidiEventType.NoteOn:
-                            events.Add(new NoteOnEvent
+                            if (lastOn.ContainsKey(e.Note))
+                                throw new ArgumentException("Bad midi file");
+
+                            events.Add(lastOn[e.Note] = new NoteOnEvent
                             {
                                 Time = e.Time,
                                 Note = (byte)e.Note,
                                 Velocity = (byte)e.Velocity,
                                 Accomp = true,
+                                Display = true,
                             });
                             break;
                         case MidiEventType.NoteOff:
-                            events.Add(new NoteOffEvent
+                            if (!lastOn.ContainsKey(e.Note))
+                                throw new ArgumentException("Bad midi file");
+
+                            var x = lastOn[e.Note];
+
+                            events.Add(x.Match=new NoteOffEvent
                             {
                                 Time = e.Time,
                                 Note = (byte)e.Note,
                                 Velocity = (byte)e.Velocity,
                                 Accomp = true,
+                                Match=x,
                             });
+
+                            lastOn.Remove(e.Note);
                             break;
                     }
                 }

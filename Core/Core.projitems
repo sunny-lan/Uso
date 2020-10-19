@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Song\MidiToSong.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\Song.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\Event.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Song\Staff.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\SimpleTimeManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\TimeSource.cs" />
   </ItemGroup>

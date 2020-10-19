@@ -7,6 +7,7 @@ using Uso.Core.MIDI;
 using Uso.Core.MIDI.Parser;
 using Uso.Core.Song;
 using Uso.Core.Timing;
+using Uso.Mono;
 
 namespace Uso.UWP
 
@@ -37,12 +38,16 @@ namespace Uso.UWP
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
             var m = new MidiFile("Assets/test.mid");
+            var s = MidiSong.FromMidi(m);
+
+            var theme = ThemeLoader.LoadFromContent(Content);
+            var stf = new StaffRenderer(theme, , s);
+
             Task.Run(async () =>
             {
-                var g =await Uso.Core.Game.NewGame(MidiSong.FromMidi(m), midiManager, this);
+                var g =await Uso.Core.Game.NewGame(s, midiManager, this);
                 g.Play();
             });
         }

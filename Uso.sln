@@ -7,9 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UWP", "UWP\UWP.csproj", "{7
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Core", "Core\Core.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono", "Mono\Mono.shproj", "{4A06DCDF-7778-4DEA-ACD9-4E487E9C36E4}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Mono\Mono.projitems*{4a06dcdf-7778-4dea-acd9-4e487e9c36e4}*SharedItemsImports = 13
 		Core\Core.projitems*{7c286766-3501-4b44-8a57-f21b27ec4aee}*SharedItemsImports = 4
+		Mono\Mono.projitems*{7c286766-3501-4b44-8a57-f21b27ec4aee}*SharedItemsImports = 4
 		Core\Core.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

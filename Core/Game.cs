@@ -20,11 +20,12 @@ namespace Uso.Core
             {
                 timeManager.Schedule(e.Time, () =>
                 {
+                   
                     if (e.Accomp)
                     {
-                        if(e is Song.NoteEvent)
+                        if(e is Song.NoteEvent e1)
                         {
-                            output.SendMessage(Song.MIDIAdapter.Convert(e as Song.NoteEvent));
+                            output.SendMessage(Song.MIDIAdapter.Convert(e1));
                         }
                         else
                         {
@@ -32,10 +33,9 @@ namespace Uso.Core
                         }
                     }
 
-                    if(e is Song.TempoChangeEvent)
+                    if(e is Song.TempoChangeEvent t1)
                     {
-                        var e2 = e as Song.TempoChangeEvent;
-                        timeManager.Tempo = e2.NewTempo;
+                        timeManager.Tempo = t1.NewTempo;
                     }
                 });
             }
