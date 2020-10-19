@@ -1,35 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Uso.Core.Song;
-using Uso.Core.Timing;
 
 namespace Uso.Mono
 {
     interface MusicView
     {
-        long StartTime { get; }
-        long StopTime { get; }
+        double StartTime { get; }
+        double StopTime { get; }
     }
 
     class Theme
     {
         public Texture2D Lane;
         public Texture2D Note;
+        public SpriteFont TestFont;
     }
 
     static class ThemeLoader
     {
-        public static Theme LoadFromContent(ContentManager mgr)
+        public static void LoadFromContent(this Theme t,ContentManager mgr)
         {
-            return new Theme
-            {
-                Lane = mgr.Load<Texture2D>("Images/Lane"),
-                Note = mgr.Load<Texture2D>("Images/Note"),
-            };
+            t.Lane = mgr.Load<Texture2D>("Images/lane");
+            t.Note = mgr.Load<Texture2D>("Images/note");
+        }
+
+        public static void LoadBasic(this Theme t, ContentManager mgr)
+        {
+            t.TestFont = mgr.Load<SpriteFont>("Fonts/test");
         }
     }
 
@@ -53,6 +55,22 @@ namespace Uso.Mono
             this.ui = ui;
             this.vw = vw;
             this.s = s;
+
+            //default
+            
+        }
+
+        private void DrawNote(SpriteBatch sb, Rectangle area, NoteOnEvent n1, NoteOffEvent n2)
+        {
+            double conversion = area.Width / (vw.StopTime - vw.StartTime);
+
+            sb.Draw(ui.Lane, new Rectangle
+            {
+                X = n1.Note * 10 + area.Y ,
+                Y = (int)(area.X + (n1.Time - vw.StartTime) * conversion),
+                Height = (int)((n2.Time - n1.Time) * conversion),
+                Width = 10,
+            }, Color.White);
         }
 
         /// <summary>
@@ -62,27 +80,27 @@ namespace Uso.Mono
         /// </summary>
         public void Draw(SpriteBatch sb, Rectangle area)
         {
-            float conversion = area.Width / (vw.StopTime - vw.StartTime);
-            int idx = s.Events.GetFirstIdx(vw.StartTime);
-            while (s.Events[idx].Time < vw.StopTime)
+            
+            for (int idx = s.DisplayEvents.GetFirstIdx(vw.StartTime); 
+                idx < s.DisplayEvents.Count;idx++)
             {
-                var evt = s.Events[idx];
-                if (evt.Display)
+                var evt = s.DisplayEvents[idx];
+                if (evt.Time > vw.StopTime) goto outer;
+                switch (evt)
                 {
-                    switch (evt)
-                    {
-                        case NoteOnEvent n1:
-                            sb.Draw(ui.Note, new Vector2
-                            {
-                                X = area.X + (n1.Time - vw.StartTime) * conversion,
-                                Y = lanePositions[n1.Note] + area.Y,
-                            }, Color.White);
-                            break;
-                        default:
-                            throw new ArgumentException("Cannot display event");
-                    }
+                    case NoteOffEvent n2:
+                        NoteOnEvent n1 = n2.Match;
+                        DrawNote(sb, area, n1, n2);
+                        break;
+                    case NoteOnEvent n3:
+                        NoteOffEvent n4 = n3.Match;//TODO performance
+                        DrawNote(sb, area, n3, n4);
+                        break;
+                    default:
+                        throw new ArgumentException("Cannot display event");
                 }
             }
+        outer:;
 
         }
     }

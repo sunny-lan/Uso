@@ -5,18 +5,46 @@ using Uso.Core.MIDI;
 
 namespace Uso.Core.Song
 {
-    interface Song
+    class Song
     {
-        List<Event> Events { get; }
+        /// <summary>
+        /// events which will be used to judge user input
+        /// the generic type may be changed to allow more types later
+        /// </summary>
+        public List<NoteEvent> JudgedEvents;
 
-        long PPQ { get; }
+        /// <summary>
+        /// events which will be shown on a staff
+        /// this may change later to be split to multiple staffs
+        /// </summary>
+        public List<NoteEvent> DisplayEvents;
+
+        public List<Event> OtherEvents; 
+
+        /// <summary>
+        /// Ticks per quarter note (constant value per song)
+        /// </summary>
+        public long PPQ;
 
         /// <summary>
         /// initial tempo, in microseconds per quarter note
         /// </summary>
-        long InitialTempo { get; }
+        public long InitialTempo;
 
+        public TimeSignature InitialSignature;
 
+        public Song(List<NoteEvent> judgedEvents, List<NoteEvent> displayEvents, List<Event> otherEvents, long ppq, long initialTempo, TimeSignature initialSignature)
+        {
+            JudgedEvents = judgedEvents;
+            DisplayEvents = displayEvents;
+            OtherEvents = otherEvents;
+            JudgedEvents.Sort();
+            DisplayEvents.Sort();
+            OtherEvents.Sort();
+            PPQ = ppq;
+            InitialTempo = initialTempo;
+            InitialSignature = initialSignature;
+        }
     }
 
     static class SongExtensions
@@ -27,13 +55,13 @@ namespace Uso.Core.Song
         /// <param name="s">The list to search</param>
         /// <param name="time">The time, in PPQ</param>
         /// <returns></returns>
-        public static int GetFirstIdx(this List<Event> s, long time)
+        public static int GetFirstIdx<T>(this List<T> s, double time) where T:Event
         {
             int lo = 0, hi = s.Count;
             while (lo != hi)
             {
                 int mid = (lo + hi) / 2;
-                if (s[lo].Time < time)
+                if (s[mid].Time < time)
                     lo = mid + 1;
                 else
                     hi = mid;

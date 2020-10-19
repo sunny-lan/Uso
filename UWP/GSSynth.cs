@@ -19,10 +19,10 @@ namespace Uso.UWP
         {
             public MidiSynthesizer intSynth;
 
-            public void SendMessage(NoteEvent evt)
+            public void SendMessage(NoteOutput evt)
             {
                 IMidiMessage msg;
-                if (evt is NoteOnEvent)
+                if (evt is NoteOnOutput)
                 {
                     msg = new MidiNoteOnMessage(0, evt.Note, evt.Velocity);
                 }

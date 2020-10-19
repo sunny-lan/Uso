@@ -12,36 +12,26 @@ namespace Uso.Core
         TimeSource timeManager;
 
 
-        public static async Task<Game> NewGame(Song.Song s, MIDI.Manager midiManager,  TimeSourceFactory tf)
+        public static async Task<Game> NewGame(Song.Song s, MIDI.Manager midiManager,  TimeSource ts)
         {
-            TimeSource timeManager = tf.NewTimeSource(s.PPQ, s.InitialTempo);
             var output = await midiManager.CreateOutput();
-            foreach (Song.Event e in s.Events)
-            {
-                timeManager.Schedule(e.Time, () =>
-                {
-                   
-                    if (e.Accomp)
-                    {
-                        if(e is Song.NoteEvent e1)
-                        {
-                            output.SendMessage(Song.MIDIAdapter.Convert(e1));
-                        }
-                        else
-                        {
-                            throw new ArgumentException("Bad accomp event. Must be a NoteEvent");
-                        }
-                    }
+            ts.Tempo = s.InitialTempo;
+            foreach (Song.Event e in s.OtherEvents) {
 
-                    if(e is Song.TempoChangeEvent t1)
-                    {
-                        timeManager.Tempo = t1.NewTempo;
-                    }
-                });
+                if (e is Song.TempoChangeEvent t1)
+                {
+                    ts.Schedule(e.Time, ()=>ts.Tempo = t1.NewTempo);
+                }
+
+                
+                if (e is Song.OutputEvent o)
+                {
+                    ts.Schedule(e.Time, () => output.SendMessage(o.Output));
+                }
             }
             return new Game
             {
-                timeManager = timeManager
+                timeManager = ts
             };
         }
         private Game() { }

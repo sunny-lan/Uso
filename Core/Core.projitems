@@ -9,24 +9,26 @@
     <Import_RootNamespace>Uso.Core</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-  </ItemGroup>
-  <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MIDI\Output.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MIDI\Manager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MIDI\OutputEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MIDI\MidiEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MIDI\Parser\MidiFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Song\MIDIAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\MidiToSong.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\Song.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\Event.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Song\Staff.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\SimpleTimeManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\TimeSource.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+    <None Include="$(MSBuildThisFileDirectory)Content\obj\WindowsStoreApp\Content\.mgstats" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
   </ItemGroup>
 </Project>

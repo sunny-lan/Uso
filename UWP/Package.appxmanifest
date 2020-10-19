@@ -28,7 +28,7 @@
   </Resources>
 
   <Applications>
-    <Application Id="Uso" EntryPoint="Uso.UWP.App">
+    <Application Id="Uso" EntryPoint="Uso.UWP.App" Executable="Uso.exe">
       <uap:VisualElements
         DisplayName="Uso!"
         Square150x150Logo="Assets\Square150x150Logo.png"

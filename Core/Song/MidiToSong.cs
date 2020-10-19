@@ -7,24 +7,16 @@ using Uso.Core.MIDI.Parser;
 
 namespace Uso.Core.Song
 {
-    class MidiSong : Song
+    class MidiToSong 
     {
 
-        private MidiSong() { }
-
-        public List<NoteEvent> Accomp { get; private set; }
-
-        public long PPQ { get; private set; }
-
-        public long InitialTempo { get; private set; }
-
-        public List<Event> Events { get; private set; }
 
         public static Song FromMidi(MidiFile f)
         {
             var events = new List<Event>();
+            var displayEvents = new List<NoteEvent>();
 
-            var lastOn=new Dictionary<int, NoteOnEvent>();
+            var lastOn = new Dictionary<int, NoteOnEvent>();
 
             foreach (var t in f.Tracks)
             {
@@ -46,14 +38,22 @@ namespace Uso.Core.Song
                             if (lastOn.ContainsKey(e.Note))
                                 throw new ArgumentException("Bad midi file");
 
-                            events.Add(lastOn[e.Note] = new NoteOnEvent
+                            displayEvents.Add(lastOn[e.Note] = new NoteOnEvent
                             {
                                 Time = e.Time,
-                                Note = (byte)e.Note,
-                                Velocity = (byte)e.Velocity,
-                                Accomp = true,
-                                Display = true,
+                                Note = e.Note,
+                                Velocity = e.Velocity,
                             });
+
+                            events.Add(new OutputEvent { 
+                                Time = e.Time ,
+                                Output = new NoteOnOutput
+                                {
+                                    Note= (byte)e.Note,
+                                    Velocity= (byte)e.Velocity,
+                                }
+                            });
+
                             break;
                         case MidiEventType.NoteOff:
                             if (!lastOn.ContainsKey(e.Note))
@@ -61,27 +61,44 @@ namespace Uso.Core.Song
 
                             var x = lastOn[e.Note];
 
-                            events.Add(x.Match=new NoteOffEvent
+                            displayEvents.Add(x.Match = new NoteOffEvent
                             {
                                 Time = e.Time,
-                                Note = (byte)e.Note,
-                                Velocity = (byte)e.Velocity,
-                                Accomp = true,
-                                Match=x,
+                                Note = e.Note,
+                                Velocity = e.Velocity,
+                                Match = x,
                             });
 
                             lastOn.Remove(e.Note);
+
+                            events.Add(new OutputEvent
+                            {
+                                Time = e.Time,
+                                Output = new NoteOffOutput
+                                {
+                                    Note = (byte)e.Note,
+                                    Velocity = (byte)e.Velocity,
+                                }
+                            });
+
                             break;
                     }
                 }
             }
 
-            return new MidiSong
-            {
-                Events = events,
-                PPQ = f.TicksPerQuarterNote,
-                InitialTempo = 60 * 1000 * 1000 / 120,
-            };
+            return new Song
+            (
+                otherEvents : events,
+                displayEvents:displayEvents,
+                ppq : f.TicksPerQuarterNote,
+                initialTempo : 60 * 1000 * 1000 / 120,
+                judgedEvents: new List<NoteEvent>(),//TODO
+                initialSignature:new TimeSignature
+                {
+                    //TODO
+                }
+                
+            );
         }
     }
 }
