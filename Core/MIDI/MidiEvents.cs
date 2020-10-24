@@ -2,12 +2,12 @@
 {
 
     
-    public abstract class NoteOutput
+    public abstract class NoteEvent
     {
         public byte Note;
         public byte Velocity;
     }
 
-    public class NoteOnOutput:NoteOutput { }
-    public class NoteOffOutput : NoteOutput { }
+    public class NoteOnEvent:NoteEvent { }
+    public class NoteOffEvent : NoteEvent { }
 }

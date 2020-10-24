@@ -23,6 +23,9 @@ namespace Uso.UWP
         private SimpleTimeSource ts;
         private StaffRenderer sR;
         private bool loading = true;
+        private Mono.KeyboardInput inp;
+
+        private Core.Game g;
 
 
         public TestGame()
@@ -36,7 +39,7 @@ namespace Uso.UWP
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            midiManager = new GsSynthManager();
+            midiManager = new UWPMidiManager();
 
             base.Initialize();
         }
@@ -70,7 +73,9 @@ namespace Uso.UWP
                     interval = s.PPQ * 4,
                 }, s);
 
-                var g = await Uso.Core.Game.NewGame(s, midiManager, ts);
+                 g = await Uso.Core.Game.NewGame(s, midiManager, ts, sR);
+                inp = new Mono.KeyboardInput(g);
+                
                 loading = false;
                 g.Play();
             });
@@ -78,9 +83,11 @@ namespace Uso.UWP
 
         private long fsTime = -1;
 
+      
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            var st = Keyboard.GetState();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed )
                 Exit();
             if (!loading)
             {
@@ -92,8 +99,16 @@ namespace Uso.UWP
                     ts.Update(Math.Min(100 * 1000, (now - fsTime) / 10.0));
                 }
                 fsTime = now;
-            }
 
+                inp.Update(st);
+              
+
+                if (st.IsKeyDown(Keys.Escape))
+                {
+                    if (g.Playing) g.Pause();
+                    else g.Play();
+                }
+            }
             base.Update(gameTime);
         }
 

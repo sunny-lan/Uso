@@ -7,23 +7,37 @@ namespace Uso.Core
     /// <summary>
     /// Represents a play of a single game
     /// </summary>
-    class Game
+    class Game : MIDI.Listener
     {
-        TimeSource timeManager;
+        private TimeSource timeManager;
+        private Judgement.StandardJudger judger;
+        private Display display;
+        private MIDI.Listener output;
 
-
-        public static async Task<Game> NewGame(Song.Song s, MIDI.Manager midiManager,  TimeSource ts)
+        public interface Display : Judgement.JudgementAccepter<Judgement.StandardJudgement>
         {
+
+        }
+
+        public static async Task<Game> NewGame(
+            Song.Song s,
+            MIDI.Manager midiManager,
+            TimeSource ts,
+            Display display
+        )
+        {
+
             var output = await midiManager.CreateOutput();
             ts.Tempo = s.InitialTempo;
-            foreach (Song.Event e in s.OtherEvents) {
+            foreach (Song.Event e in s.OtherEvents)
+            {
 
                 if (e is Song.TempoChangeEvent t1)
                 {
-                    ts.Schedule(e.Time, ()=>ts.Tempo = t1.NewTempo);
+                    ts.Schedule(e.Time, () => ts.Tempo = t1.NewTempo);
                 }
 
-                
+
                 if (e is Song.OutputEvent o)
                 {
                     ts.Schedule(e.Time, () => output.SendMessage(o.Output));
@@ -31,7 +45,13 @@ namespace Uso.Core
             }
             return new Game
             {
-                timeManager = ts
+                timeManager = ts,
+
+                judger = new Judgement.StandardJudger(s, ts),
+
+                display = display,
+
+                output=output,
             };
         }
         private Game() { }
@@ -48,5 +68,35 @@ namespace Uso.Core
             timeManager.Pause();
         }
 
+        public void SendMessage(MIDI.NoteEvent evt)
+        {
+            if (Playing)
+            {
+
+                Judgement.StandardJudgement r;
+                
+                switch (evt)
+                {
+                    case MIDI.NoteOnEvent on:
+                        r  = judger.JudgeInput(new Judgement.NoteOnInput
+                        {
+                            Note = on.Note,
+                            Velocity = on.Velocity,
+                        });
+                        break;
+                    case MIDI.NoteOffEvent off:
+                        r = judger.JudgeInput(new Judgement.NoteOffInput
+                        {
+                            Note = off.Note,
+                            Velocity = off.Velocity,
+                        });
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid input type");
+                }
+                display.OnInput(r);
+                output.SendMessage(evt);
+            }
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace Uso.Core.Song
     /// This will likely change to allow more output events
     /// </summary>
     class OutputEvent :Event{
-        public MIDI.NoteOutput Output;
+        public MIDI.NoteEvent Output;
     }
 
     abstract class NoteEvent:Event

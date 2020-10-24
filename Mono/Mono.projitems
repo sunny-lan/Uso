@@ -16,6 +16,7 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)KeyboardInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StaffRenderer.cs" />
   </ItemGroup>
 </Project>

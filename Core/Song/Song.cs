@@ -19,6 +19,7 @@ namespace Uso.Core.Song
         /// </summary>
         public List<NoteEvent> DisplayEvents;
 
+        public List<TempoChangeEvent> TempoChanges;
         public List<Event> OtherEvents; 
 
         /// <summary>
@@ -44,6 +45,24 @@ namespace Uso.Core.Song
             PPQ = ppq;
             InitialTempo = initialTempo;
             InitialSignature = initialSignature;
+
+            TempoChanges = new List<TempoChangeEvent>();
+            TempoChanges.Add(new TempoChangeEvent
+            {
+                NewTempo = initialTempo,
+            });
+            foreach(var e in OtherEvents)
+            {
+                if(e is TempoChangeEvent t)
+                {
+                    TempoChanges.Add(t);
+                }
+            }
+        }
+
+        public long GetTempoAt(long time)
+        {
+            return TempoChanges[TempoChanges.GetFirstIdx(time)].NewTempo;
         }
     }
 

@@ -45,9 +45,10 @@ namespace Uso.Core.Song
                                 Velocity = e.Velocity,
                             });
 
-                            events.Add(new OutputEvent { 
+                            events.Add(new OutputEvent
+                            { 
                                 Time = e.Time ,
-                                Output = new NoteOnOutput
+                                Output = new MIDI.NoteOnEvent
                                 {
                                     Note= (byte)e.Note,
                                     Velocity= (byte)e.Velocity,
@@ -74,7 +75,7 @@ namespace Uso.Core.Song
                             events.Add(new OutputEvent
                             {
                                 Time = e.Time,
-                                Output = new NoteOffOutput
+                                Output = new MIDI.NoteOffEvent
                                 {
                                     Note = (byte)e.Note,
                                     Velocity = (byte)e.Velocity,

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
+using Uso.Core.Judgement;
 using Uso.Core.Song;
 
 namespace Uso.Mono
@@ -23,7 +24,7 @@ namespace Uso.Mono
 
     static class ThemeLoader
     {
-        public static void LoadFromContent(this Theme t,ContentManager mgr)
+        public static void LoadFromContent(this Theme t, ContentManager mgr)
         {
             t.Lane = mgr.Load<Texture2D>("Images/lane");
             t.Note = mgr.Load<Texture2D>("Images/note");
@@ -38,7 +39,7 @@ namespace Uso.Mono
     /// <summary>
     /// Renders a single staff of music
     /// </summary>
-    class StaffRenderer
+    class StaffRenderer : Core.Game.Display
 
     {
         private Theme ui;
@@ -48,7 +49,12 @@ namespace Uso.Mono
         /// <summary>
         /// Maps from MIDI Note number to y position of line
         /// </summary>
-        private Dictionary<int, int> lanePositions = new Dictionary<int, int>();
+        private Dictionary<int, Lane> lanes = new Dictionary<int, Lane>();
+        class Lane
+        {
+            public int Position;
+            public bool Lit;
+        }
 
         public StaffRenderer(Theme ui, MusicView vw, Song s)
         {
@@ -57,21 +63,40 @@ namespace Uso.Mono
             this.s = s;
 
             //default
-            
+            for (int i = 0; i < 120; i++)
+            {
+                lanes.Add(i, new Lane
+                {
+                    Position = i,
+                    Lit = false,
+                });
+            }
+
+        }
+
+        private Color Find(long time)
+        {
+            if (time % s.PPQ == 0) return Color.Red;
+            if (time % (s.PPQ / 2) == 0) return Color.Blue;
+            if (time % (s.PPQ / 4) == 0) return Color.Yellow;
+            return Color.White;
         }
 
         private void DrawNote(SpriteBatch sb, Rectangle area, NoteOnEvent n1, NoteOffEvent n2)
         {
             double conversion = area.Width / (vw.StopTime - vw.StartTime);
 
+            Lane l = lanes[n1.Note];
+
             sb.Draw(ui.Lane, new Rectangle
             {
-                X = n1.Note * 10 + area.Y ,
-                Y = (int)(area.X + (n1.Time - vw.StartTime) * conversion),
+                X = l.Position * 10 + area.X,
+                Y = area.Height - (int)(area.X + (n2.Time - vw.StartTime) * conversion),
                 Height = (int)((n2.Time - n1.Time) * conversion),
                 Width = 10,
-            }, Color.White);
+            }, Find(n1.Time));
         }
+
 
         /// <summary>
         /// Render the staff within given rectangle.
@@ -80,9 +105,22 @@ namespace Uso.Mono
         /// </summary>
         public void Draw(SpriteBatch sb, Rectangle area)
         {
-            
-            for (int idx = s.DisplayEvents.GetFirstIdx(vw.StartTime); 
-                idx < s.DisplayEvents.Count;idx++)
+            foreach (var lane in lanes.Values)
+            {
+                if (lane.Lit)
+                {
+                    sb.Draw(ui.Lane, new Rectangle
+                    {
+                        X = lane.Position * 10 + area.X,
+                        Y = 0,
+                        Height = area.Height,
+                        Width = 10,
+                    }, Color.White);
+                }
+            }
+
+            for (int idx = s.DisplayEvents.GetFirstIdx(vw.StartTime);
+                idx < s.DisplayEvents.Count; idx++)
             {
                 var evt = s.DisplayEvents[idx];
                 if (evt.Time > vw.StopTime) goto outer;
@@ -102,6 +140,23 @@ namespace Uso.Mono
             }
         outer:;
 
+        }
+
+        public void OnInput(StandardJudgement j)
+        {
+            switch (j.Input)
+            {
+                case NoteOnInput on:
+                    lanes[on.Note].Lit = true;
+                    break;
+                case NoteOffInput off:
+                    lanes[off.Note].Lit = false;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            
         }
     }
 }
