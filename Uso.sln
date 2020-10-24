@@ -9,6 +9,11 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Core", "Core\Core.shproj", 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono", "Mono\Mono.shproj", "{4A06DCDF-7778-4DEA-ACD9-4E487E9C36E4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{88EE8614-CB61-437B-9247-B8E4E2D26734}"
+	ProjectSection(SolutionItems) = preProject
+		README.MD = README.MD
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Mono\Mono.projitems*{4a06dcdf-7778-4dea-acd9-4e487e9c36e4}*SharedItemsImports = 13
