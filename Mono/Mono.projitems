@@ -19,6 +19,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ComboCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\GameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\LoadingScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\MainGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\Screen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StaffRenderer.cs" />
   </ItemGroup>
 </Project>

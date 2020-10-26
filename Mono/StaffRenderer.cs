@@ -23,15 +23,17 @@ namespace Uso.Mono
 
     static class ThemeLoader
     {
-        public static void LoadFromContent(this Theme t, ContentManager mgr)
+        public static Theme LoadFromContent(this Theme t, ContentManager mgr)
         {
             t.Lane = mgr.Load<Texture2D>("Images/lane");
             t.Note = mgr.Load<Texture2D>("Images/note");
+            return t;
         }
 
-        public static void LoadBasic(this Theme t, ContentManager mgr)
+        public static Theme LoadBasic(this Theme t, ContentManager mgr)
         {
             t.TestFont = mgr.Load<SpriteFont>("Fonts/test");
+            return t;
         }
     }
 
