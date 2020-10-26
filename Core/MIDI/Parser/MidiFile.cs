@@ -188,9 +188,31 @@
                 }
             }
 
+            //sort all note off before note on
+            track.MidiEvents.Sort((x, y) => {
+                int cmp = x.Time.CompareTo(y.Time);
+                if (cmp == 0)
+                {
+                    if (x.MidiEventType == MidiEventType.NoteOff && y.MidiEventType == MidiEventType.NoteOn)
+                    {
+                        return -1;
+                    }
+
+                    if (y.MidiEventType == MidiEventType.NoteOff && x.MidiEventType == MidiEventType.NoteOn)
+                    {
+                        return 1;
+                    }
+
+                    return 0;
+                }
+                else
+                {
+                    return cmp;
+                }
+            });
+
             return track;
         }
-
         private static class Reader
         {
             public static int Read16(byte[] data, ref int i)
@@ -306,6 +328,8 @@
 
         public TextEventType TextEventType => (TextEventType)this.Type;
     }
+
+
 
     public enum MidiEventType : byte
     {

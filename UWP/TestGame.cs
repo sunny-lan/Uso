@@ -59,22 +59,29 @@ namespace Uso.UWP
             sb = new SpriteBatch(GraphicsDevice);
             theme = new Theme();
             theme.LoadBasic(Content);
+
+            var loadMidi = Task.Run(() => new MidiFile("Assets/desire_drive.mid"));
+            var loadTheme = Task.Run(() => theme.LoadFromContent(Content));
+            var output = midiManager.CreateOutput();
+
             Task.Run(async () =>
             {
                 // TODO: use this.Content to load your game content here
-                var m = new MidiFile("Assets/test.mid");
-                var s = MidiToSong.FromMidi(m);
+                var s = MidiToSong.FromMidi(await loadMidi);
 
-                theme.LoadFromContent(Content);
+
                 ts = new SimpleTimeSource(s.PPQ, s.InitialTempo);
                 //var stf = new StaffRenderer(theme, , s);
+                await loadTheme;
                 sR = new StaffRenderer(theme, new MV
                 {
                     ts = ts,
                     interval = s.PPQ * 4,
                 }, s);
 
-                g = await Uso.Core.Game.NewGame(s, midiManager, ts, this);
+                var mout = await output;
+
+                g = new Core.Game(s, mout, ts, this);
                 inp = new Mono.KeyboardInput(g);
 
                 ctr = new ComboCounter(theme.TestFont, ts);
@@ -134,7 +141,7 @@ namespace Uso.UWP
                     Width = GraphicsDevice.Viewport.Width,
                     Height = GraphicsDevice.Viewport.Height,
                 });
-                sb.DrawString(theme.TestFont, "" + ts.Time, Vector2.Zero, Color.White);
+                sb.DrawString(theme.TestFont, "" +Math.Round( ts.Time/ts.PPQ/4), Vector2.Zero, Color.White);
 
 
                 ctr.Draw(sb, new Vector2

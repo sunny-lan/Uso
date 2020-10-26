@@ -1,26 +1,24 @@
 ﻿
 using System;
+using Windows.Devices.Display.Core;
 
 namespace Uso.Core.Song
 {
-    public abstract class Event:IComparable<Event>
+    public abstract class Event
     {
         /// <summary>
         /// Time that the event starts, in PPQ
         /// </summary>
         public long Time;
 
-        public int CompareTo(Event other)
-        {
-            return Time.CompareTo(other.Time);
-        }
     }
 
     /// <summary>
     /// This will likely change to allow more output events
     /// </summary>
     class OutputEvent :Event{
-        public MIDI.NoteEvent Output;
+        public MIDI.Event Output;
+
     }
 
     public abstract class NoteEvent:Event
@@ -34,6 +32,8 @@ namespace Uso.Core.Song
         /// The note off event which corresponds to this note on
         /// </summary>
         public NoteOffEvent Match;
+
+     
     } 
 
     class NoteOffEvent : NoteEvent {
@@ -41,6 +41,7 @@ namespace Uso.Core.Song
         /// The note on which corresponds to this note off
         /// </summary>
         public NoteOnEvent Match;
+
     }
 
     class TempoChangeEvent:Event

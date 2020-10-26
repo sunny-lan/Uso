@@ -4,6 +4,7 @@ using System;
 
 namespace Uso.Core
 {
+
     /// <summary>
     /// Represents a play of a single game
     /// </summary>
@@ -14,20 +15,18 @@ namespace Uso.Core
         private Display display;
         private MIDI.Listener output;
 
-        public interface Display : Judgement.StandardJudgementListener
-        {
+        public Game(Song.Song s,
 
-        }
-
-        public static async Task<Game> NewGame(
-            Song.Song s,
-            MIDI.Manager midiManager,
+            MIDI.Listener output,
             TimeSource ts,
             Display display
-        )
+            )
         {
+            timeManager = ts;
+            this.display = display;
+            this.output = output;
 
-            var output = await midiManager.CreateOutput();
+
             ts.Tempo = s.InitialTempo;
             foreach (Song.Event e in s.OtherEvents)
             {
@@ -43,18 +42,17 @@ namespace Uso.Core
                     ts.Schedule(e.Time, () => output.SendMessage(o.Output));
                 }
             }
-            return new Game
-            {
-                timeManager = ts,
 
-                judger = new Judgement.StandardJudger(s.JudgedEvents, ts, display),
+            judger = new Judgement.StandardJudger(s.JudgedEvents, ts, display);
 
-                display = display,
-
-                output=output,
-            };
         }
-        private Game() { }
+
+
+        public interface Display : Judgement.StandardJudgementListener
+        {
+
+        }
+
 
         public bool Playing { get => timeManager.Playing; }
 
@@ -68,11 +66,14 @@ namespace Uso.Core
             timeManager.Pause();
         }
 
-        public void SendMessage(MIDI.NoteEvent evt)
+        //TODO sketch
+        public void SendMessage(MIDI.Event evt)
         {
             if (Playing)
             {
-                judger.OnInput(evt);
+                if (evt is MIDI.NoteEvent ne)
+                    judger.OnInput(ne);
+                evt.Channel = 15;
                 output.SendMessage(evt);
             }
         }

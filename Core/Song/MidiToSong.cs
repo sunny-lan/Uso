@@ -7,10 +7,10 @@ using Uso.Core.MIDI.Parser;
 
 namespace Uso.Core.Song
 {
-    class MidiToSong 
+    class MidiToSong
     {
 
-
+        //TODO add general conversions
         public static Song FromMidi(MidiFile f)
         {
             var events = new List<Event>();
@@ -24,7 +24,21 @@ namespace Uso.Core.Song
                 {
                     switch (e.MidiEventType)
                     {
+                        case MidiEventType.ControlChange:
+
+                            events.Add(new OutputEvent
+                            {
+                                Time = e.Time,
+                                Output = new MIDI.ControlEvent
+                                {
+                                    Channel = (byte)e.Channel,
+                                    Controller = e.Arg2,
+                                    ControlValue = e.Arg3,
+                                },
+                            });
+                            break;
                         case MidiEventType.MetaEvent:
+
                             if (e.MetaEventType == MetaEventType.Tempo)
                             {
                                 events.Add(new TempoChangeEvent
@@ -46,12 +60,14 @@ namespace Uso.Core.Song
                             });
 
                             events.Add(new OutputEvent
-                            { 
-                                Time = e.Time ,
+                            {
+                                Time = e.Time,
                                 Output = new MIDI.NoteOnEvent
                                 {
-                                    Note= (byte)e.Note,
-                                    Velocity= (byte)e.Velocity,
+                                    Note = (byte)e.Note,
+                                    Velocity = (byte)e.Velocity,
+                                    Channel = (byte)e.Channel,
+
                                 }
                             });
 
@@ -79,6 +95,7 @@ namespace Uso.Core.Song
                                 {
                                     Note = (byte)e.Note,
                                     Velocity = (byte)e.Velocity,
+                                    Channel = (byte)e.Channel,
                                 }
                             });
 
@@ -89,16 +106,16 @@ namespace Uso.Core.Song
 
             return new Song
             (
-                otherEvents : events,
-                displayEvents:displayEvents,
-                ppq : f.TicksPerQuarterNote,
-                initialTempo : 60 * 1000 * 1000 / 120,
+                otherEvents: events,
+                displayEvents: displayEvents,
+                ppq: f.TicksPerQuarterNote,
+                initialTempo: 60 * 1000 * 1000 / 120,
                 judgedEvents: new List<NoteEvent>(),//TODO
-                initialSignature:new TimeSignature
+                initialSignature: new TimeSignature
                 {
                     //TODO
                 }
-                
+
             );
         }
     }

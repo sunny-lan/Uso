@@ -32,14 +32,20 @@ namespace Uso.Core.Song
 
         public TimeSignature InitialSignature;
 
+        /// <summary>
+        /// Expects events to be given in proper order, with note off sorted after note on.
+        /// </summary>
+        /// <param name="judgedEvents"></param>
+        /// <param name="displayEvents"></param>
+        /// <param name="otherEvents"></param>
+        /// <param name="ppq"></param>
+        /// <param name="initialTempo"></param>
+        /// <param name="initialSignature"></param>
         public Song(List<NoteEvent> judgedEvents, List<NoteEvent> displayEvents, List<Event> otherEvents, long ppq, long initialTempo, TimeSignature initialSignature)
         {
             JudgedEvents = judgedEvents;
             DisplayEvents = displayEvents;
             OtherEvents = otherEvents;
-            JudgedEvents.Sort();
-            DisplayEvents.Sort();
-            OtherEvents.Sort();
             PPQ = ppq;
             InitialTempo = initialTempo;
             InitialSignature = initialSignature;

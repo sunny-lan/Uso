@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Uso.Core.MIDI;
@@ -76,16 +77,22 @@ namespace Uso.UWP
         {
             public MidiSynthesizer intSynth;
 
-            public void SendMessage(NoteEvent evt)
+            public void SendMessage(Event evt)
             {
                 IMidiMessage msg;
-                if (evt is NoteOnEvent)
+                switch (evt)
                 {
-                    msg = new MidiNoteOnMessage(0, evt.Note, evt.Velocity);
-                }
-                else
-                {
-                    msg = new MidiNoteOffMessage(0, evt.Note, evt.Velocity);
+                    case NoteOnEvent on:
+                        msg = new MidiNoteOnMessage(evt.Channel, on.Note, on.Velocity);
+                        break;
+                    case NoteOffEvent off:
+                        msg = new MidiNoteOffMessage(evt.Channel, off.Note, off.Velocity);
+                        break;
+                    case ControlEvent ctrl:
+                        msg = new MidiControlChangeMessage(evt.Channel, ctrl.Controller, ctrl.ControlValue);
+                        break;
+                    default:
+                        throw new ArgumentException("unsupported message type");
                 }
                 intSynth.SendMessage(msg);
             }
