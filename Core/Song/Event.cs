@@ -3,7 +3,7 @@ using System;
 
 namespace Uso.Core.Song
 {
-    abstract class Event:IComparable<Event>
+    public abstract class Event:IComparable<Event>
     {
         /// <summary>
         /// Time that the event starts, in PPQ
@@ -23,7 +23,7 @@ namespace Uso.Core.Song
         public MIDI.NoteEvent Output;
     }
 
-    abstract class NoteEvent:Event
+    public abstract class NoteEvent:Event
     {
         public int Velocity;
         public int Note;

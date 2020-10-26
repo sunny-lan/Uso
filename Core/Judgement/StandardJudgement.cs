@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Uso.Core.Song;
 using Uso.Core.Timing;
 
 namespace Uso.Core.Judgement
 {
-    class StandardJudgement : Judgement
+    public class StandardJudgement
     {
+        public double RecordedTime;
+
+        /// <summary>
+        /// Is null if no note was matched
+        /// </summary>
+        public Song.NoteEvent Match;
+
+        /// <summary>
+        /// The input that was judged
+        /// </summary>
+        public MIDI.NoteEvent Input;
+
         public enum Level
         {
             MISS,
@@ -20,18 +29,28 @@ namespace Uso.Core.Judgement
         public Level TimingJudgement;
     }
 
-    class StandardScore
+    public class StandardScore
     {
         public int Combo;
         public long Score;
         public double Accuracy;
     }
 
-    class StandardJudger : Judger<StandardJudgement, StandardScore>
+    //TODO use default empty implmentation when available
+    interface StandardJudgementListener
     {
-        private Song.Song s;
+        void ComboBroken(int newCombo, StandardJudgement reason);
+        void ComboUp(int newCombo, StandardJudgement reason);
+        void JudgmentPassed(StandardJudgement judgement);
+        void ScoreChanged(StandardScore score, StandardJudgement reason);
+
+    }
+
+    class StandardJudger : Judger<MIDI.NoteEvent, StandardScore>
+    {
         private TimeSource ts;
-        private Dictionary<int, NoteEvent> toHit = new Dictionary<int, NoteEvent>();
+        private readonly StandardJudgementListener listener;
+        private Dictionary<int, Song.NoteEvent> toHit = new Dictionary<int, Song.NoteEvent>();
 
         public class JudgementSettings
         {
@@ -44,11 +63,10 @@ namespace Uso.Core.Judgement
 
         private JudgementSettings settings;
 
-        public StandardJudger(Song.Song s, TimeSource ts)
+        public StandardJudger(List<Song.NoteEvent> judgedEvents, TimeSource ts, StandardJudgementListener listener)
         {
-            this.s = s;
             this.ts = ts;
-
+            this.listener = listener;
             settings = new JudgementSettings
             {
                 NotDetect = 2 * ts.PPQ,
@@ -59,7 +77,7 @@ namespace Uso.Core.Judgement
 
             };
 
-            foreach (var e in s.JudgedEvents)
+            foreach (var e in judgedEvents)
             {
                 // ts.Schedule(e.Time - settings.NotDetect, () => { 
                 //
@@ -71,16 +89,22 @@ namespace Uso.Core.Judgement
 
         public StandardScore TotalScore { get; }
 
-        public StandardJudgement JudgeInput(Input i)
+        public void OnInput(MIDI.NoteEvent i)
         {
-            TotalScore.Combo++;
-
-
-            return new StandardJudgement
+            var j=new StandardJudgement
             {
                 RecordedTime = ts.Time,
                 Input = i,
             };
+            
+            TotalScore.Combo++;
+            
+            listener.ComboUp(TotalScore.Combo,j);
+
+            listener.ScoreChanged(TotalScore,j);
+
+
+            listener.JudgmentPassed(j);
         }
     }
 }

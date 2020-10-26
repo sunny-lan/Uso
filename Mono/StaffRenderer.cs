@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using Uso.Core.Judgement;
@@ -39,17 +38,18 @@ namespace Uso.Mono
     /// <summary>
     /// Renders a single staff of music
     /// </summary>
-    class StaffRenderer : Core.Game.Display
+    class StaffRenderer
 
     {
-        private Theme ui;
-        private MusicView vw;
-        private Song s;
+        private readonly Theme ui;
+        private readonly MusicView vw;
+        private readonly Song s;
+
 
         /// <summary>
-        /// Maps from MIDI Note number to y position of line
+        /// Maps from MIDI Note number to lane
         /// </summary>
-        private Dictionary<int, Lane> lanes = new Dictionary<int, Lane>();
+        private readonly Dictionary<int, Lane> lanes = new Dictionary<int, Lane>();
         class Lane
         {
             public int Position;
@@ -131,7 +131,7 @@ namespace Uso.Mono
                         DrawNote(sb, area, n1, n2);
                         break;
                     case NoteOnEvent n3:
-                        NoteOffEvent n4 = n3.Match;//TODO performance
+                        NoteOffEvent n4 = n3.Match;//TODO make note only draw once
                         DrawNote(sb, area, n3, n4);
                         break;
                     default:
@@ -142,14 +142,14 @@ namespace Uso.Mono
 
         }
 
-        public void OnInput(StandardJudgement j)
+        public void JudgmentPassed(StandardJudgement j)
         {
             switch (j.Input)
             {
-                case NoteOnInput on:
+                case Core.MIDI.NoteOnEvent on:
                     lanes[on.Note].Lit = true;
                     break;
-                case NoteOffInput off:
+                case Core.MIDI.NoteOffEvent off:
                     lanes[off.Note].Lit = false;
                     break;
                 default:
@@ -158,5 +158,6 @@ namespace Uso.Mono
 
             
         }
+
     }
 }

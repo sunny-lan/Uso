@@ -1,38 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Uso.Core.Song;
+﻿//TODO this file is unused
 
 namespace Uso.Core.Judgement
 {
-    abstract class Input
-    {
-        public int Note;
-        public int Velocity;
-    }
+    
 
-    class NoteOnInput:Input
-    {
-
-    }
-    class NoteOffInput : Input
-    {
-
-    }
-
-    abstract class Judgement
+    abstract class Judgement<InputType,MatchType>
     {
         public double RecordedTime;
 
         /// <summary>
         /// Is null if no note was matched
         /// </summary>
-        public NoteEvent Match;
+        public MatchType Match;
 
         /// <summary>
         /// The input that was judged
         /// </summary>
-        public Input Input;
+        public InputType Input;
     }
 
 
@@ -42,14 +26,15 @@ namespace Uso.Core.Judgement
     /// And maintain overall performance of player
     /// It shall return a judgement object which is then taken by the ui, in order to show score
     /// </summary>
-    interface Judger<out InputJudgement, out Score> where InputJudgement :Judgement
+    interface Judger<Input, out Score>
     {
         Score TotalScore { get; }
-        InputJudgement JudgeInput(Input i);
+        void OnInput(Input i);
     }
 
-    interface JudgementAccepter<InputJudgement> where InputJudgement : Judgement
+    interface JudgementListener<InputJudgement, Score, I,M> where InputJudgement : Judgement<I,M>
     {
-        void OnInput(InputJudgement judgement);
+        void JudgmentPassed(InputJudgement judgement);
+        void ScoreChanged(Score score, InputJudgement reason);
     }
 }

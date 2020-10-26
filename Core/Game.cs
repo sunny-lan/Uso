@@ -14,7 +14,7 @@ namespace Uso.Core
         private Display display;
         private MIDI.Listener output;
 
-        public interface Display : Judgement.JudgementAccepter<Judgement.StandardJudgement>
+        public interface Display : Judgement.StandardJudgementListener
         {
 
         }
@@ -47,7 +47,7 @@ namespace Uso.Core
             {
                 timeManager = ts,
 
-                judger = new Judgement.StandardJudger(s, ts),
+                judger = new Judgement.StandardJudger(s.JudgedEvents, ts, display),
 
                 display = display,
 
@@ -72,29 +72,7 @@ namespace Uso.Core
         {
             if (Playing)
             {
-
-                Judgement.StandardJudgement r;
-                
-                switch (evt)
-                {
-                    case MIDI.NoteOnEvent on:
-                        r  = judger.JudgeInput(new Judgement.NoteOnInput
-                        {
-                            Note = on.Note,
-                            Velocity = on.Velocity,
-                        });
-                        break;
-                    case MIDI.NoteOffEvent off:
-                        r = judger.JudgeInput(new Judgement.NoteOffInput
-                        {
-                            Note = off.Note,
-                            Velocity = off.Velocity,
-                        });
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid input type");
-                }
-                display.OnInput(r);
+                judger.OnInput(evt);
                 output.SendMessage(evt);
             }
         }

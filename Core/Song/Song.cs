@@ -1,7 +1,5 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Text;
-using Uso.Core.MIDI;
 
 namespace Uso.Core.Song
 {

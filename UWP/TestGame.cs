@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Uso.Core.Judgement;
 using Uso.Core.MIDI.Parser;
 using Uso.Core.Song;
 using Uso.Core.Timing;
@@ -13,7 +14,7 @@ using Uso.Mono;
 namespace Uso.UWP
 
 {
-    public class TestGame : Game
+    public class TestGame : Game,Core.Game.Display
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch sb;
@@ -26,7 +27,7 @@ namespace Uso.UWP
         private Mono.KeyboardInput inp;
 
         private Core.Game g;
-
+        private ComboCounter ctr;
 
         public TestGame()
         {
@@ -73,9 +74,11 @@ namespace Uso.UWP
                     interval = s.PPQ * 4,
                 }, s);
 
-                 g = await Uso.Core.Game.NewGame(s, midiManager, ts, sR);
+                g = await Uso.Core.Game.NewGame(s, midiManager, ts, this);
                 inp = new Mono.KeyboardInput(g);
-                
+
+                ctr = new ComboCounter(theme.TestFont, ts);
+
                 loading = false;
                 g.Play();
             });
@@ -83,11 +86,11 @@ namespace Uso.UWP
 
         private long fsTime = -1;
 
-      
+
         protected override void Update(GameTime gameTime)
         {
             var st = Keyboard.GetState();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed )
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
             if (!loading)
             {
@@ -101,7 +104,7 @@ namespace Uso.UWP
                 fsTime = now;
 
                 inp.Update(st);
-              
+
 
                 if (st.IsKeyDown(Keys.Escape))
                 {
@@ -120,7 +123,7 @@ namespace Uso.UWP
             sb.Begin();
             if (loading)
             {
-                sb.DrawString(theme.TestFont,"loading...", Vector2.Zero, Color.White);
+                sb.DrawString(theme.TestFont, "loading...", Vector2.Zero, Color.White);
             }
             else
             {
@@ -132,10 +135,35 @@ namespace Uso.UWP
                     Height = GraphicsDevice.Viewport.Height,
                 });
                 sb.DrawString(theme.TestFont, "" + ts.Time, Vector2.Zero, Color.White);
+
+
+                ctr.Draw(sb, new Vector2
+                {
+                    X = 100,
+                    Y = 100,
+                });
             }
             sb.End();
 
             base.Draw(gameTime);
+        }
+
+        public void ComboBroken(int newCombo, StandardJudgement reason)
+        {
+        }
+
+        public void ComboUp(int newCombo, StandardJudgement reason)
+        {
+            ctr.Increment(newCombo);
+        }
+
+        public void JudgmentPassed(StandardJudgement judgement)
+        {
+            sR.JudgmentPassed(judgement);
+        }
+
+        public void ScoreChanged(StandardScore score, StandardJudgement reason)
+        {
         }
     }
 }
