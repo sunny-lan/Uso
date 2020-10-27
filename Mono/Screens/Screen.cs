@@ -16,6 +16,8 @@ namespace Uso.Mono.Screens
         void Draw(GameLayers output, Rectangle area);
     }
 
+    //TODO have more thought about the screen lifecycle 
+    // for example when can a screen be returned to etc
     interface Screen:Drawable
     {
         void Update(GameTime gameTime);
@@ -23,7 +25,7 @@ namespace Uso.Mono.Screens
 
     interface ScreenManager
     {
-        void Switch(Screen newScreen, bool pushToHistory);
-        void Back();
+        void Exit();
+        void Switch(Screen newScreen);
     }
 }

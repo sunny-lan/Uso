@@ -5,36 +5,14 @@ using System;
 using System.Collections.Generic;
 using Uso.Core.Judgement;
 using Uso.Core.Song;
+using Uso.Mono.Customization;
 
-namespace Uso.Mono
+namespace Uso.Mono.Components
 {
     interface MusicView
     {
         double StartTime { get; }
         double StopTime { get; }
-    }
-
-    class Theme
-    {
-        public Texture2D Lane;
-        public Texture2D Note;
-        public SpriteFont TestFont;
-    }
-
-    static class ThemeLoader
-    {
-        public static Theme LoadFromContent(this Theme t, ContentManager mgr)
-        {
-            t.Lane = mgr.Load<Texture2D>("Images/lane");
-            t.Note = mgr.Load<Texture2D>("Images/note");
-            return t;
-        }
-
-        public static Theme LoadBasic(this Theme t, ContentManager mgr)
-        {
-            t.TestFont = mgr.Load<SpriteFont>("Fonts/test");
-            return t;
-        }
     }
 
     /// <summary>

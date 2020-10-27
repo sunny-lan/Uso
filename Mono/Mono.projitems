@@ -10,19 +10,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Components\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ComboCounter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Component.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)KeyboardInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\ComboCounter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Customization\Theme.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KeyboardMIDIInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\LoadingScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\MainGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\PlayScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\Screen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StaffRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\StaffRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\SongLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Screens\SongSelect.cs" />
   </ItemGroup>
 </Project>

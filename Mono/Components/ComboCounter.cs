@@ -7,7 +7,7 @@ using Uso.Core;
 using Uso.Core.Effects;
 using Uso.Core.Timing;
 
-namespace Uso.Mono
+namespace Uso.Mono.Components
 {
     class ComboCounter
     {
@@ -67,7 +67,7 @@ namespace Uso.Mono
             var v2 = overlayBloop.Value;
             if (v2 > 0)
             {
-                overlayColor.A = (byte)MathUtil.Lerp(v2,  0,OverlayOpacityBegin);
+                overlayColor.A = (byte)MathUtil.Lerp(v2, 0, OverlayOpacityBegin);
                 sb.DrawString(font, newText, position,
                     overlayColor, 0, Vector2.Zero,
                     (float)MathUtil.Lerp(v2, counterSize, OverlayBloopSize),
@@ -83,7 +83,7 @@ namespace Uso.Mono
         {
             overlayColor.A = (byte)OverlayOpacityBegin;
             newText = newCount + "x";
-            long delayedBloop = (long)Math.Round(t.Time / BloopDivision+1) * BloopDivision ;
+            long delayedBloop = (long)Math.Round(t.Time / BloopDivision + 1) * BloopDivision;
             overlayBloop.Do2(t.Time, delayedBloop);
 
             //bloop on the next beet

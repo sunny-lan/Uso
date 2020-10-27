@@ -10,6 +10,8 @@ using Uso.Core.MIDI.Parser;
 using Uso.Core.Song;
 using Uso.Core.Timing;
 using Uso.Mono;
+using Uso.Mono.Components;
+using Uso.Mono.Customization;
 
 namespace Uso.UWP
 
@@ -24,7 +26,7 @@ namespace Uso.UWP
         private SimpleTimeSource ts;
         private StaffRenderer sR;
         private bool loading = true;
-        private Mono.KeyboardInput inp;
+        private Mono.KeyboardMIDIInput inp;
 
         private Core.Game g;
         private ComboCounter ctr;
@@ -82,7 +84,7 @@ namespace Uso.UWP
                 var mout = await output;
 
                 g = new Core.Game(s, mout, ts, this);
-                inp = new Mono.KeyboardInput(g);
+                inp = new Mono.KeyboardMIDIInput(g);
 
                 ctr = new ComboCounter(theme.TestFont, ts);
 

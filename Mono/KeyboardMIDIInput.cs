@@ -6,11 +6,11 @@ using Uso.Core.MIDI;
 
 namespace Uso.Mono
 {
-    class KeyboardInput
+    class KeyboardMIDIInput
     {
         private Core.MIDI.Listener listener;
 
-        public KeyboardInput(Listener listener)
+        public KeyboardMIDIInput(Listener listener)
         {
             this.listener = listener;
         }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using Uso.Mono.Customization;
 
 namespace Uso.Mono.Screens
 {
@@ -9,7 +11,6 @@ namespace Uso.Mono.Screens
         private readonly Task<Screen> t;
         private readonly Theme theme;
 
-        public bool PushToHistory = false;
 
         public LoadingScreen(
             ScreenManager mgr,
@@ -28,10 +29,11 @@ namespace Uso.Mono.Screens
         bool switched;
         public void Update(GameTime gameTime)
         {
-            if (t.IsCompleted && !switched)
+            if (t.IsCompleted )
             {
+                if (switched) throw new InvalidAsynchronousStateException("Should be finished loading already");
                 switched = true;
-                mgr.Switch(t.Result, PushToHistory);
+                mgr.Switch(t.Result);
             }
         }
     }
