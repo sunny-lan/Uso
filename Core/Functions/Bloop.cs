@@ -1,8 +1,8 @@
 ﻿using Uso.Core.Timing;
 
-namespace Uso.Core.Effects
+namespace Uso.Core.Functions
 {
-    class Bloop
+    class Bloop:Function
     {
         private readonly TimeSource t;
 
@@ -18,7 +18,7 @@ namespace Uso.Core.Effects
         /// Bloop starting at now, peaking after beginLen, and ending after endLen
         /// TODO: blooping before another bloop prevents the other bloop from ever reaching max bloop
         /// </summary>
-        public void Do(double beginLen, double endLen )
+        public void Do(double beginLen, double endLen)
         {
             start = t.Time;
             middle = start + beginLen;

@@ -7,24 +7,21 @@ namespace Uso.Mono.Screens
 {
     class LoadingScreen : Screen
     {
-        private readonly ScreenManager mgr;
+        private readonly MainGame.Globals globals;
         private readonly Task<Screen> t;
-        private readonly Theme theme;
 
 
         public LoadingScreen(
-            ScreenManager mgr,
-            Task<Screen> t,
-            Theme theme
+            MainGame.Globals globals,
+            Task<Screen> t
         )
         {
-            this.mgr = mgr;
+            this.globals = globals;
             this.t = t;
-            this.theme = theme;
         }
         public void Draw(GameLayers output, Rectangle area)
         {
-            output.MainLayer.DrawString(theme.TestFont, "loading", area.Location.ToVector2(), Color.White);
+            output.MainLayer.DrawString(globals.Theme.TestFont, "loading", area.Location.ToVector2(), Color.White);
         }
         bool switched;
         public void Update(GameTime gameTime)
@@ -33,7 +30,7 @@ namespace Uso.Mono.Screens
             {
                 if (switched) throw new InvalidAsynchronousStateException("Should be finished loading already");
                 switched = true;
-                mgr.Switch(t.Result);
+                globals.ScreenManager.Switch(t.Result);
             }
         }
     }

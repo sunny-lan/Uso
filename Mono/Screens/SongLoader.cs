@@ -14,21 +14,18 @@ namespace Uso.Mono.Screens
 {
     class SongLoader : Screen
     {
-        private readonly ScreenManager mgr;
-        private readonly Theme theme;
+        private readonly MainGame.Globals globals;
         private readonly SongSelect previous;
         private readonly Task<Song> midiLoad;
         private readonly Task<Listener> midiOutLoad;
 
         public SongLoader(
-            ScreenManager mgr,
-            Theme theme,
+            MainGame.Globals globals,
             SongSelect previous,
             SelectedSong selectedSong
             )
         {
-            this.mgr = mgr;
-            this.theme = theme;
+            this.globals = globals;
             this.previous = previous;
             this.midiLoad = Task.Run(async () =>
             {
@@ -42,7 +39,7 @@ namespace Uso.Mono.Screens
 
         public void Draw(GameLayers output, Rectangle area)
         {
-            output.MainLayer.DrawString(theme.TestFont, "loading song", area.Location.ToVector2(), Color.White);
+            output.MainLayer.DrawString(globals.Theme.TestFont, "loading song", area.Location.ToVector2(), Color.White);
 
         }
 
@@ -50,21 +47,21 @@ namespace Uso.Mono.Screens
         {
 
             var st = Keyboard.GetState();
-            if (st.IsKeyDown(Keys.Escape))
+            if (globals.InputManager.DidPress(Keys.Escape))
             {
                 //TODO cancel load task
-                mgr.Switch(previous);
+                globals.ScreenManager.Switch(previous);
             }
 
 
             //upon both loading complete, switch
             if (midiLoad.IsCompleted && midiOutLoad.IsCompleted)
             {
-                mgr.Switch(new PlayScreen(
-                    mgr, theme, this,
+                globals.ScreenManager.Switch(new PlayScreen(
+                    globals, this,
                     midiLoad.Result,
                     new PlayScreen.SongSettings(midiOutLoad.Result)
-                ));
+                )) ;
             }
         }
     }

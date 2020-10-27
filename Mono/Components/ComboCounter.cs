@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Uso.Core;
-using Uso.Core.Effects;
+using Uso.Core.Functions;
 using Uso.Core.Timing;
 
 namespace Uso.Mono.Components

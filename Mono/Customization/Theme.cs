@@ -12,6 +12,7 @@ namespace Uso.Mono.Customization
         public Texture2D Lane;
         public Texture2D Note;
         public SpriteFont TestFont;
+        public Texture2D Cursor;
     }
 
     static class ThemeLoader
@@ -20,6 +21,7 @@ namespace Uso.Mono.Customization
         {
             t.Lane = mgr.Load<Texture2D>("Images/lane");
             t.Note = mgr.Load<Texture2D>("Images/note");
+            t.Cursor = mgr.Load<Texture2D>("Images/cursor");
             return t;
         }
 

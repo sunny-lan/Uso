@@ -17,36 +17,34 @@ namespace Uso.Mono.Screens
 
     class SongSelect : Screen
     {
-        private readonly ScreenManager mgr;
-        private readonly Theme theme;
+        private readonly MainGame.Globals globals;
         private readonly GameMenu previous;
 
-        public SongSelect(ScreenManager mgr, Theme theme, GameMenu previous)
+        public SongSelect(MainGame.Globals globals, GameMenu previous)
         {
-            this.mgr = mgr;
-            this.theme = theme;
+            this.globals = globals;
             this.previous = previous;
         }
 
         public void Draw(GameLayers output, Rectangle area)
         {
-            output.MainLayer.DrawString(theme.TestFont, "press enter to select desire drive", area.Location.ToVector2(), Color.White);
+            output.MainLayer.DrawString(globals.Theme.TestFont, "press enter to select desire drive", area.Location.ToVector2(), Color.White);
 
         }
 
         public void Update(GameTime gameTime)
         {
             var st = Keyboard.GetState();
-            if (st.IsKeyDown(Keys.Enter))
+            if (globals.InputManager.DidPress(Keys.Enter))
             {
-                mgr.Switch(new SongLoader(mgr, theme,this, new SelectedSong
+                globals.ScreenManager.Switch(new SongLoader(globals,this, new SelectedSong
                 {
                     SongFile="Assets/desire_drive.mid"
                 }));
             }
-            else if (st.IsKeyDown(Keys.Escape))
+            else if (globals.InputManager.DidPress(Keys.Escape))
             {
-                mgr.Switch(previous);
+                globals.ScreenManager.Switch(previous);
             }
 
         }

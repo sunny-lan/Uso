@@ -9,31 +9,28 @@ namespace Uso.Mono.Screens
 {
     class GameMenu : Screen
     {
-        private readonly Theme theme;
-        private readonly ScreenManager mgr;
         private readonly SongSelect songSelect;
+        private readonly MainGame.Globals globals;
 
-        public GameMenu(Theme theme, ScreenManager mgr)
+        public GameMenu(MainGame.Globals globals)
         {
-            this.theme = theme;
-            this.mgr = mgr;
-            this.songSelect = new SongSelect(mgr, theme,this);
+            this.songSelect = new SongSelect(globals,this);
+            this.globals = globals;
         }
         public void Draw(GameLayers output, Rectangle area)
         {
-            output.MainLayer.DrawString(theme.TestFont, "press enter to start", area.Location.ToVector2(), Color.White);
+            output.MainLayer.DrawString(globals.Theme.TestFont, "press enter to start", area.Location.ToVector2(), Color.White);
         }
 
         public void Update(GameTime gameTime)
         {
-            var st = Keyboard.GetState();
-            if (st.IsKeyDown(Keys.Enter))
+            if (globals.InputManager.DidPress(Keys.Enter))
             {
-                mgr.Switch(songSelect);
+                globals.ScreenManager.Switch(songSelect);
             }
-            else if (st.IsKeyDown(Keys.Escape))
+            else if (globals.InputManager.DidPress(Keys.Escape))
             {
-                mgr.Exit();
+                globals.ScreenManager.Exit();
             }
 
 

@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Uso.Core.MIDI;
+using Uso.Mono.Components;
 using Uso.Mono.Customization;
+using Uso.Mono.Input;
 
 namespace Uso.Mono.Screens
 {
@@ -14,10 +17,24 @@ namespace Uso.Mono.Screens
         private readonly Stack<Screen> history = new Stack<Screen>();
         private Screen curScreen;
         private readonly GraphicsDeviceManager graphics;
-        private readonly RasterizerState RasterizerState;
-        private Theme theme;
+
+        //private readonly RasterizerState RasterizerState;
         private GameLayers layers;
         private Task<Theme> themeTask;
+
+        private Cursor cursor;
+
+        /// <summary>
+        /// Commonly used objects passed to pretty much every class
+        /// Subject to change
+        /// </summary>
+        public class Globals
+        {
+            public InputManager InputManager;
+            public Theme Theme;
+            public ScreenManager ScreenManager;
+        }
+        private readonly Globals globals;
 
         public void Switch(Screen newScreen)
         {
@@ -26,12 +43,18 @@ namespace Uso.Mono.Screens
 
         public MainGame()
         {
-            
+
             graphics = new GraphicsDeviceManager(this);
-            IsMouseVisible = true;
+            IsMouseVisible = false;
             //graphics.PreparingDeviceSettings += Graphics_PreparingDeviceSettings;
             //RasterizerState = new RasterizerState { MultiSampleAntiAlias = true };
 
+            globals = new Globals
+            {
+                InputManager = new InputManager(),
+                ScreenManager = this,
+                Theme = new Theme(),
+            };
         }
 
         //private void Graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -44,25 +67,35 @@ namespace Uso.Mono.Screens
         {
             Content.RootDirectory = "Content";
 
-            theme = new Theme();
-            theme.LoadBasic(Content);
+            globals.Theme.LoadBasic(Content);
             this.layers = new GameLayers
             {
                 MainLayer = new SpriteBatch(GraphicsDevice),
             };
 
-            this.themeTask = Task.Run(() => theme.LoadFromContent(Content));
+            this.themeTask = Task.Run(() => globals.Theme.LoadFromContent(Content));
 
             Func<Task<Screen>> loadAll = async () =>
             {
-                return new GameMenu(await themeTask, this);
+                await themeTask;
+                this.cursor = new Cursor(globals.Theme.Cursor)
+                {
+                    ClickPoint = new Vector2
+                    {
+                        X=127,
+                        Y=106,
+                    },
+                    DefaultScale=0.5f,
+                };
+                return new GameMenu(globals);
             };
 
-            Switch(new LoadingScreen(this, loadAll(), theme));
+            Switch(new LoadingScreen(globals, loadAll()));
         }
 
         protected override void Update(GameTime gameTime)
         {
+            globals.InputManager.Update(Keyboard.GetState());
             curScreen.Update(gameTime);
             base.Update(gameTime);
         }
@@ -71,19 +104,21 @@ namespace Uso.Mono.Screens
         {
             GraphicsDevice.Clear(Color.Black);
             layers.MainLayer.Begin(
-                blendState: BlendState.Additive
-            //SpriteSortMode.Immediate,
+                SpriteSortMode.Immediate,
+                BlendState.Additive
             //null,
             //null,
             //null,
             //RasterizerState
             ); ;
-            curScreen.Draw(this.layers,new Rectangle
+            curScreen.Draw(this.layers, new Rectangle
             {
-                Location=Point.Zero,
+                Location = Point.Zero,
                 Width = GraphicsDevice.Viewport.Width,
                 Height = GraphicsDevice.Viewport.Height,
             });
+            if(this.cursor!=null)
+                this.cursor.Draw(layers.MainLayer);
             layers.MainLayer.End();
             base.Draw(gameTime);
         }

@@ -12,7 +12,9 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Effects\Bloop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Functions\Bloop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Functions\Function.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Functions\SmoothedBool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Judgement\Judger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Judgement\StandardJudgement.cs" />
@@ -27,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Song\Staff.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\SimpleTimeManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Timing\TimeSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InputManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

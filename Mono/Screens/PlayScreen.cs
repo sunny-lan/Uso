@@ -15,8 +15,7 @@ namespace Uso.Mono.Screens
 {
     class PlayScreen : Screen, Uso.Core.Game.Display
     {
-        private readonly ScreenManager mgr;
-        private readonly Theme theme;
+        private readonly MainGame.Globals globals;
         private readonly SongLoader previous;
         private readonly SimpleTimeSource ts;
         private readonly StaffRenderer sR;
@@ -45,16 +44,15 @@ namespace Uso.Mono.Screens
                 MidiOut = midiOut;
             }
         }
-        public PlayScreen(ScreenManager mgr, Theme theme, SongLoader previous, Song s, SongSettings songSettings)
+        public PlayScreen(MainGame.Globals globals, SongLoader previous, Song s, SongSettings songSettings)
         {
-            this.mgr = mgr;
-            this.theme = theme;
+            this.globals = globals;
             this.previous = previous;
 
 
             ts = new SimpleTimeSource(s.PPQ, s.InitialTempo);
             //var stf = new StaffRenderer(theme, , s);
-            sR = new StaffRenderer(theme, new MV
+            sR = new StaffRenderer(globals.Theme, new MV
             {
                 ts = ts,
                 interval = s.PPQ * 4,
@@ -64,7 +62,7 @@ namespace Uso.Mono.Screens
             g = new Core.Game(s, songSettings.MidiOut, ts, this);
             inp = new Mono.KeyboardMIDIInput(g);
 
-            ctr = new ComboCounter(theme.TestFont, ts);
+            ctr = new ComboCounter(globals.Theme.TestFont, ts);
 
             g.Play();
         }
@@ -86,14 +84,14 @@ namespace Uso.Mono.Screens
             inp.Update(st);
 
 
-            if (st.IsKeyDown(Keys.Escape))
+            if (globals.InputManager.DidPress(Keys.Escape))
             {
                 if (g.Playing) g.Pause();
                 else g.Play();
-            }else if (st.IsKeyDown(Keys.OemTilde))
+            }else if (globals.InputManager.DidPress(Keys.OemTilde))
             {
                 //TODO think more about this screen switching logic
-                mgr.Switch(previous);
+                globals.ScreenManager.Switch(previous);
             }
         }
 
@@ -104,7 +102,7 @@ namespace Uso.Mono.Screens
             var pos = area.Location.ToVector2();
             var sb = output.MainLayer;
             sR.Draw(sb,area);
-            sb.DrawString(theme.TestFont, "" + Math.Round(ts.Time / ts.PPQ / 4), pos, Color.White);
+            sb.DrawString(globals.Theme.TestFont, "" + Math.Round(ts.Time / ts.PPQ / 4), pos, Color.White);
 
 
             ctr.Draw(sb,pos+new Vector2
